@@ -33,7 +33,9 @@ class Parser{
 	
 	int build_AST_tree(vector<Token>& tokens);	
 	void show_AST_tree();
-
+	int witch_group(int token_type);
+	void log_err_expected(string expected);
+	void log_err_expected_met(string expected, Token token_met);
 };
 
 #endif

@@ -76,28 +76,48 @@ Parser::~Parser(){
 int Parser::build_AST_tree(vector<Token>& tokens){
 	int i = 0;
 	Token token(0, -1, "Nan");
+	Token next_token(0, -1, "Nan");
 	
 	/*for(i = 0; tokens[i].get_token_type() != endl_type; ++i){
 		tokens[i].show_token();
 	}*/
-	
-	for(i = 0; (token = tokens[i]).get_token_type() != endl_type; ++i){
+	next_token = tokens[0];
+	//for(i = 0; (token = tokens[i]).get_token_type() != endl_type; ++i){
+	for(i = 0; (token = next_token).get_token_type() != endl_type; ++i){
+		next_token = tokens[i + 1];
 		if ((token.get_token_type() == number_type) || (token.get_token_type() == id_type)){
+			if((witch_group(next_token.get_token_type()) != operation_group) && (next_token.get_token_type() != close_paren_type) && (next_token.get_token_type() != endl_type)){
+				log_err_expected_met("operation", next_token);
+				return 1;
+			}
 			out_stack.push_back(token);
 		} else if (precedences[token.get_token_type()] > 0){
+			if((witch_group(next_token.get_token_type()) != operand_group) && (next_token.get_token_type() != open_paren_type)){
+				log_err_expected_met("operand", next_token);
+				return 1;
+			}
 			while ((op_stack.size() > 0) && ((precedences[op_stack[op_stack.size() - 1].get_token_type()] > precedences[token.get_token_type()]) || ((precedences[op_stack[op_stack.size() - 1].get_token_type()] == precedences[token.get_token_type()]) && (asoc[token.get_token_type()] == l_asoc))) && (op_stack[op_stack.size() - 1].get_token_type() != open_paren_type)){
 				out_stack.push_back(op_stack[op_stack.size() - 1]);
 				op_stack.pop_back();
 			}
 			op_stack.push_back(token);
 		} else if (token.get_token_type() == open_paren_type){
+			if((witch_group(next_token.get_token_type()) != operand_group) && (next_token.get_token_type() != open_paren_type) ){
+				log_err_expected_met("operand", next_token);
+				return 1;
+			}
 			op_stack.push_back(token);
 		} else if (token.get_token_type() == close_paren_type){
+			if((witch_group(next_token.get_token_type()) != operation_group) && (next_token.get_token_type() != close_paren_type) && (next_token.get_token_type() != endl_type)){
+				log_err_expected_met("operation", next_token);
+				return 1;
+			}
 			while (op_stack[op_stack.size() - 1].get_token_type() != open_paren_type){
 				out_stack.push_back(op_stack[op_stack.size() - 1]);
 				op_stack.pop_back();
 				if (op_stack.size() == 0){
-					cout << "Error: ( expected\n\n";
+					//cout << "Error: ( expected\n\n";
+					log_err_expected("(");
 					return 1;
 				}
 			}
@@ -148,7 +168,7 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 	
 	if(AST_stack.size() == 0){
 		cout << "\n\n Collapse" << endl;
-		return -1;
+		return 1;
 	}
 	
 	AST_tree = AST_stack[AST_stack.size() - 1];
@@ -160,3 +180,35 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 void Parser::show_AST_tree(){
 	show_AST(AST_tree, 0);
 }
+
+int Parser::witch_group(int token_type){ //pow_type, mul_type, div_type, plus_type, minus_type
+	if ((token_type == pow_type) || (token_type == mul_type) || (token_type == div_type) || (token_type == plus_type) || (token_type == minus_type)){
+		return operation_group;
+	}
+	if ((token_type == number_type) || (token_type == id_type)){
+		return operand_group;
+	}
+	
+	return unknown_group;
+}
+
+void Parser::log_err_expected(string expected){
+	cout << "Error: '" << expected << "' expected";
+}
+
+void Parser::log_err_expected_met(string expected, Token token_met){
+	cout << "Error(" << token_met.get_token_pointer_posistion() << "): \'" << expected << "\' expected, but \'"<< token_met.get_token_name() << "\' met";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,6 +9,7 @@ enum {unknown_char ,__letter_char, punct_char, digit_char, nzdigit_char, space_c
 enum {unknown_type, endl_type, number_type, id_type, open_paren_type,
 	close_paren_type, pow_type, mul_type, div_type, plus_type, minus_type,
 	l_asoc, r_asoc};
+enum {unknown_group ,operation_group, operand_group};
 	
 	
 class Token{
