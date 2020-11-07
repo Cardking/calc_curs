@@ -10,10 +10,10 @@ using namespace std;
 
 int main()
 {
-	Lexer lexer("   1 + 2 * 3 ^ 4 ^ 5 / ( a + b ) ");
+	Lexer lexer("   1 + 2 * 3 ^ 4 ^ 0 / ( a + b ) ");
 	Token token(0, -1, "Nan");
 	vector<Token> tokens;
-	bool build_unsuccess = 0; 
+	Token build_unsuccess = Token(); 
 	
 	while((token = lexer.get_next_token()).get_token_type() != endl_type){
 		if(token.get_token_type() == unknown_type){
@@ -31,10 +31,11 @@ int main()
 	
 	build_unsuccess = parser.build_AST_tree(tokens);
 	
-	if (!build_unsuccess){
+	if (build_unsuccess.get_token_type() == no_error){
 		parser.show_AST_tree();
 	} else {
-		cout << "\nBAD\n";
+		//cout << "\nBAD\n";
+		cout << build_unsuccess.get_token_name() << endl;
 	}
 	
 	tokens.clear();

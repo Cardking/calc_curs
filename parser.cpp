@@ -73,7 +73,7 @@ Parser::~Parser(){
 	//cout << "\n\nParser destruct\n\n";
 }
 
-int Parser::build_AST_tree(vector<Token>& tokens){
+Token Parser::build_AST_tree(vector<Token>& tokens){
 	int i = 0;
 	int paren_counter = 0;
 	Token token(0, -1, "Nan");
@@ -92,11 +92,11 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 	}
 	
 	if(paren_counter < 0){
-		log_err_expected("(");
-		return 1;
+		return log_err_expected("(");
+		//return 1;
 	} else if (paren_counter > 0) {
-		log_err_expected(")");
-		return 1;
+		return log_err_expected(")");
+		//return 1;
 	}
 	
 	
@@ -106,14 +106,14 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 		next_token = tokens[i + 1];
 		if ((token.get_token_type() == number_type) || (token.get_token_type() == id_type)){
 			if((witch_group(next_token.get_token_type()) != operation_group) && (next_token.get_token_type() != close_paren_type) && (next_token.get_token_type() != endl_type)){
-				log_err_expected_met("operation", next_token);
-				return 1;
+				return log_err_expected_met("operation", next_token);
+				//return 1;
 			}
 			out_stack.push_back(token);
 		} else if (precedences[token.get_token_type()] > 0){
 			if((witch_group(next_token.get_token_type()) != operand_group) && (next_token.get_token_type() != open_paren_type)){
-				log_err_expected_met("operand", next_token);
-				return 1;
+				return log_err_expected_met("operand", next_token);
+				//return 1;
 			}
 			while ((op_stack.size() > 0) && ((precedences[op_stack[op_stack.size() - 1].get_token_type()] > precedences[token.get_token_type()]) || ((precedences[op_stack[op_stack.size() - 1].get_token_type()] == precedences[token.get_token_type()]) && (asoc[token.get_token_type()] == l_asoc))) && (op_stack[op_stack.size() - 1].get_token_type() != open_paren_type)){
 				out_stack.push_back(op_stack[op_stack.size() - 1]);
@@ -122,22 +122,22 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 			op_stack.push_back(token);
 		} else if (token.get_token_type() == open_paren_type){
 			if((witch_group(next_token.get_token_type()) != operand_group) && (next_token.get_token_type() != open_paren_type) ){
-				log_err_expected_met("operand", next_token);
-				return 1;
+				return log_err_expected_met("operand", next_token);
+				//return 1;
 			}
 			op_stack.push_back(token);
 		} else if (token.get_token_type() == close_paren_type){
 			if((witch_group(next_token.get_token_type()) != operation_group) && (next_token.get_token_type() != close_paren_type) && (next_token.get_token_type() != endl_type)){
-				log_err_expected_met("operation", next_token);
-				return 1;
+				return log_err_expected_met("operation", next_token);
+				//return 1;
 			}
 			while (op_stack[op_stack.size() - 1].get_token_type() != open_paren_type){
 				out_stack.push_back(op_stack[op_stack.size() - 1]);
 				op_stack.pop_back();
 				if (op_stack.size() == 0){
 					//cout << "Error: ( expected\n\n";
-					log_err_expected("(");
-					return 1;
+					return log_err_expected("(");
+					//return 1;
 				}
 			}
 			op_stack.pop_back();
@@ -149,13 +149,13 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 	op_stack.pop_back();
 	}
 
-	cout << "\n\n";
+	//cout << "\n\n";
 	
 	out_stack.push_back(Token(-1, endl_type, "END"));
-	for(i = 0; out_stack[i].get_token_type() != endl_type; ++i){
+	/*for(i = 0; out_stack[i].get_token_type() != endl_type; ++i){
 		cout << out_stack[i].get_token_name();
 	}
-	cout << "\n\n";
+	cout << "\n\n";*/
 	/*out_stack[i].show_token();
 	cout << "\n\n";*/
 	
@@ -186,14 +186,17 @@ int Parser::build_AST_tree(vector<Token>& tokens){
 	}
 	
 	if(AST_stack.size() == 0){
-		cout << "\n\n Collapse" << endl;
-		return 1;
+		//cout << "\n\n Collapse" << endl;
+		//return 1;
+		return Token(-1 , exp_error, "Error: empty string");
 	}
 	
 	AST_tree = AST_stack[AST_stack.size() - 1];
 	AST_stack.pop_back();
 	//show_AST(AST_node_ptr, 0);
-	return 0;
+	//return 0;
+	
+	return Token(-1 , no_error, "");
 }
 
 void Parser::show_AST_tree(){
@@ -211,12 +214,28 @@ int Parser::witch_group(int token_type){ //pow_type, mul_type, div_type, plus_ty
 	return unknown_group;
 }
 
-void Parser::log_err_expected(string expected){
-	cout << "Error: '" << expected << "' expected";
+Token Parser::log_err_expected(string expected){
+	//cout << "Error: '" << expected << "' expected";
+	string error_name = "";
+	
+	error_name += "Error: '";
+	error_name += expected;
+	error_name += "' expected";
+	return Token(-1, exp_error, error_name);
 }
 
-void Parser::log_err_expected_met(string expected, Token token_met){
-	cout << "Error(" << token_met.get_token_pointer_posistion() << "): \'" << expected << "\' expected, but \'"<< token_met.get_token_name() << "\' met";
+Token Parser::log_err_expected_met(string expected, Token token_met){
+	//cout << "Error(" << token_met.get_token_pointer_posistion() << "): \'" << expected << "\' expected, but \'"<< token_met.get_token_name() << "\' met";
+	string error_name = "";
+	
+	error_name += "Error(";
+	error_name += token_met.get_token_pointer_posistion();
+	error_name += "): \'";
+	error_name += expected;
+	error_name += "\' expected, but \'";
+	error_name += token_met.get_token_name();
+	error_name += "\' met";
+	return Token(-1, exp_error, error_name);
 }
 
 
