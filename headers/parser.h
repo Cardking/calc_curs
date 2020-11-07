@@ -1,6 +1,11 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <vector>
+#include <map>
+
+using namespace std;
+
 struct AST_node
 {
     /*int token_type;

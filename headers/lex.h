@@ -2,8 +2,7 @@
 #define LEX_H
 
 #include <string>
-
-using namespace std;
+//using namespace std;
 
 enum {unknown_char ,__letter_char, punct_char, digit_char, nzdigit_char, space_char};
 enum {unknown_type, endl_type, number_type, id_type, open_paren_type,
@@ -16,14 +15,14 @@ class Token{
 	private:
 	int token_pointer_posistion;
 	int token_type;
-	string lexeme;
+	std::string lexeme;
 	
 	public:	
 	int get_token_type();	
 	int get_token_pointer_posistion();	
-	string get_token_name();
+	std::string get_token_name();
 	
-	Token(int pointer_position ,int type, string name);	
+	Token(int pointer_position ,int type, std::string name);	
 	Token(); 
 		
 	void show_token();
@@ -32,10 +31,10 @@ class Token{
 class Lexer{
 	private:
 	unsigned int pointer_position;
-	string line;
+	std::string line;
 	
 	public:
-	Lexer(string in_line);
+	Lexer(std::string in_line);
 	
 	int what_char(char this_char);
 		

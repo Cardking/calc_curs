@@ -75,12 +75,31 @@ Parser::~Parser(){
 
 int Parser::build_AST_tree(vector<Token>& tokens){
 	int i = 0;
+	int paren_counter = 0;
 	Token token(0, -1, "Nan");
 	Token next_token(0, -1, "Nan");
 	
 	/*for(i = 0; tokens[i].get_token_type() != endl_type; ++i){
 		tokens[i].show_token();
 	}*/
+	for (i = 0; tokens[i].get_token_type() != endl_type; ++i){
+		if(tokens[i].get_token_type() == open_paren_type){
+			++paren_counter;
+		}
+		if(tokens[i].get_token_type() == close_paren_type){
+			--paren_counter;
+		}
+	}
+	
+	if(paren_counter < 0){
+		log_err_expected("(");
+		return 1;
+	} else if (paren_counter > 0) {
+		log_err_expected(")");
+		return 1;
+	}
+	
+	
 	next_token = tokens[0];
 	//for(i = 0; (token = tokens[i]).get_token_type() != endl_type; ++i){
 	for(i = 0; (token = next_token).get_token_type() != endl_type; ++i){
