@@ -8,9 +8,14 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
-	Lexer lexer("   1 + 2 * 3 ^ 4 ^ 0 / ( a + b ) ");
+	if (argc < 2){
+		cout << "\n No string" << endl;
+		return -1;
+	}
+	//Lexer lexer("   1 + 2 * 3 ^ 4 ^ 0 / ( a + b ) ");
+	Lexer lexer(argv[1]);
 	Token token(0, -1, "Nan");
 	vector<Token> tokens;
 	Token build_unsuccess = Token(); 
