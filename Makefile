@@ -6,7 +6,7 @@ MO = main.o
 CC = g++ -std=c++11 -o
 
 all: main.o lex.o parser.o tests
-	$(CC) main $(MO) $(PO) $(LO)
+	$(CC) parser $(MO) $(PO) $(LO)
 
 main.o:
 	$(CC) $(MO) -c main.cpp
@@ -30,4 +30,4 @@ tests: lexer_test parser_test
 	
 .PHONY: run clean
 clean:
-	rm --force tests/*.o *.o main test parser_test lexer_test
+	rm --force tests/*.o *.o parser test parser_test lexer_test

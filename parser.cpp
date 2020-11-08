@@ -229,7 +229,7 @@ Token Parser::log_err_expected_met(string expected, Token token_met){
 	string error_name = "";
 	
 	error_name += "Error(";
-	error_name += token_met.get_token_pointer_posistion();
+	error_name += to_string(token_met.get_token_pointer_posistion());
 	error_name += "): \'";
 	error_name += expected;
 	error_name += "\' expected, but \'";
