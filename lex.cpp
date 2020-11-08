@@ -179,3 +179,8 @@ Token Lexer::get_next_token(){
 					
 	return Token(pointer_position - 1, unknown_type, word += line[pointer_position]);
 }
+
+void Lexer::change_line(string new_line){
+	line = new_line;
+	pointer_position = 0;
+}

@@ -40,6 +40,8 @@ class Lexer{
 	int what_char(char this_char);
 		
 	Token get_next_token();
+	
+	void change_line(std::string new_line);
 };
 
 #endif

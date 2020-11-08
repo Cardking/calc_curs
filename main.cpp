@@ -10,12 +10,16 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+	Lexer lexer("");
 	if (argc < 2){
-		cout << "\n No string" << endl;
-		return -1;
+		//cout << "\n No string" << endl;
+		//return -1;
+		lexer.change_line("   1 + 2 * 3 ^ 4 ^ 0 / ( a + b ) ");
+	} else {
+		lexer.change_line(argv[1]);
 	}
 	//Lexer lexer("   1 + 2 * 3 ^ 4 ^ 0 / ( a + b ) ");
-	Lexer lexer(argv[1]);
+	
 	Token token(0, -1, "Nan");
 	vector<Token> tokens;
 	Token build_unsuccess = Token(); 
