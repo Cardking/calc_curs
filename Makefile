@@ -28,6 +28,6 @@ tests: lexer_test parser_test
 	./lexer_test
 	./parser_test
 	
-.PHONY: run clean
+.PHONY: clean
 clean:
 	rm --force tests/*.o *.o parser test parser_test lexer_test
