@@ -1,21 +1,33 @@
-all: main.o lex.o parser.o
-	g++ -std=c++11 main.o lex.o parser.o -o main
+LO = lex.o
+PO = parser.o
+TLO = tests/lexer_test.o
+TPO = tests/parser_test.o
+MO = main.o
+CC = g++ -std=c++11 -o
+
+all: main.o lex.o parser.o tests
+	$(CC) main $(MO) $(PO) $(LO)
+
 main.o:
-	g++ -c main.cpp -o main.o
+	$(CC) $(MO) -c main.cpp
 lex.o:
-	g++ -c lex.cpp -o lex.o
+	$(CC) $(LO) -c lex.cpp
 parser.o:
-	g++ -c parser.cpp -o parser.o
+	$(CC) $(PO) -c parser.cpp
+
 lexer_test: lexer_test.o lex.o
-	g++ -std=c++11 tests/lexer_test.o lex.o -o test
+	$(CC) lexer_test $(TLO) $(LO)
 lexer_test.o:
-	g++ -std=c++11 -c tests/lexer_test.cpp -o tests/lexer_test.o
+	$(CC) $(TLO) -c tests/lexer_test.cpp
 parser_test: parser_test.o parser.o lex.o
-	g++ -std=c++11 tests/parser_test.o parser.o lex.o -o test
+	$(CC) parser_test $(TPO) $(PO) $(LO)
 parser_test.o:
-	g++ -std=c++11 -c tests/parser_test.cpp -o tests/parser_test.o
-clean:
-	rm --force *.o main test
-
+	$(CC) $(TPO) -c tests/parser_test.cpp
 	
-
+tests: lexer_test parser_test
+	./lexer_test
+	./parser_test
+	
+.PHONY: run clean
+clean:
+	rm --force tests/*.o *.o main test parser_test lexer_test
